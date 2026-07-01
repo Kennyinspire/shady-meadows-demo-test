@@ -5,6 +5,7 @@ on:
     branches: [ main, develop ]
   pull_request:
     branches: [ main ]
+  workflow_dispatch:
   schedule:
     # Nightly at 02:00 UTC — runs performance tests too
     - cron: '0 2 * * *'
@@ -98,8 +99,8 @@ jobs:
     name: Performance tests (k6)
     runs-on: ubuntu-latest
     needs: e2e-tests
-    # Only run on the nightly schedule, not on every PR
-    if: github.event_name == 'schedule'
+    # Run nightly and when manually triggered
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
 
     steps:
       - uses: actions/checkout@v4
