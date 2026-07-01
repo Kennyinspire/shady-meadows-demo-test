@@ -44,12 +44,30 @@ test.describe('Accessibility — NF-07', () => {
   test('Availability Checker widget is keyboard accessible', async ({ page }) => {
     await page.goto('/');
 
+    const checkin = futureDate(30);
+    const checkout = futureDate(32);
+    const bookingWidget = page
+      .locator('div, section')
+      .filter({ has: page.getByRole('heading', { name: /check availability/i }) })
+      .first();
+    const checkinInput = bookingWidget.getByRole('textbox').nth(0);
+    const checkoutInput = bookingWidget.getByRole('textbox').nth(1);
+    await expect(checkinInput).toBeVisible();
+    await expect(checkoutInput).toBeVisible();
+    await checkinInput.fill(toUiDate(checkin));
+    await checkoutInput.fill(toUiDate(checkout));
+
     const checkAvailabilityBtn = page.getByRole('button', { name: /check availability/i });
     await checkAvailabilityBtn.focus();
     await expect(checkAvailabilityBtn).toBeFocused();
 
     // Press Enter to submit while focused
+    const availabilityResponse = page.waitForResponse(
+      r => r.url().includes('/api/room?') && r.request().method() === 'GET'
+    );
     await page.keyboard.press('Enter');
+    const res = await availabilityResponse;
+    expect(res.ok()).toBeTruthy();
     await page.waitForLoadState('networkidle');
 
     // Page should respond (either showing reservation links or a fallback message)
@@ -61,3 +79,14 @@ test.describe('Accessibility — NF-07', () => {
   });
 
 });
+
+function futureDate(daysFromNow: number): string {
+  const d = new Date();
+  d.setDate(d.getDate() + daysFromNow);
+  return d.toISOString().split('T')[0];
+}
+
+function toUiDate(isoDate: string): string {
+  const [y, m, d] = isoDate.split('-');
+  return `${d}/${m}/${y}`;
+}
