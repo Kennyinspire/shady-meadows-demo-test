@@ -1,0 +1,18 @@
+{
+  "name": "bb-demo-tests",
+  "version": "1.0.0",
+  "description": "Automated test suite for Shady Meadows B&B demo — QA Technical Exercise",
+  "scripts": {
+    "test": "npm run test:api && npm run test:e2e",
+    "test:api": "newman run postman/RestfulBookerPlatform.collection.json --reporters cli,junit --reporter-junit-export results/api-results.xml",
+    "test:e2e": "npx playwright test",
+    "test:perf": "k6 run k6/auth-load-test.js",
+    "report": "npx playwright show-report"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.44.0",
+    "@axe-core/playwright": "^4.9.0",
+    "dotenv": "^16.4.5",
+    "typescript": "^5.4.5"
+  }
+}

@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="Restful Booker Platform — QA Exercise" tests="11" time="1.722">
+  <testsuite name="Auth / TC-11 — POST /auth/login — valid credentials return token within 5s" id="d24ae914-3b6a-482f-8698-d7d86ae9297f" timestamp="2026-07-01T09:19:50.027Z" tests="3" failures="0" errors="0" time="0.642">
+    <testcase name="Status is 200" time="0.642" classname="RestfulBookerPlatformQaExercise"/>
+    <testcase name="Token is present in response" time="0.642" classname="RestfulBookerPlatformQaExercise"/>
+    <testcase name="Response time is under 5000ms (AC: auth within 5s)" time="0.642" classname="RestfulBookerPlatformQaExercise"/>
+  </testsuite>
+  <testsuite name="Auth / TC-12 — POST /auth/login — invalid password returns 403" id="0a6751a9-17e6-4bc4-942b-1356535e8253" timestamp="2026-07-01T09:19:50.027Z" tests="2" failures="0" errors="0" time="0.067">
+    <testcase name="Status is 401" time="0.067" classname="RestfulBookerPlatformQaExercise"/>
+    <testcase name="No token is issued" time="0.067" classname="RestfulBookerPlatformQaExercise"/>
+  </testsuite>
+  <testsuite name="Auth / TC-13 — POST /auth/login — invalid username returns 403, generic error" id="c035dff5-014f-49a1-a770-1051c3ecd98e" timestamp="2026-07-01T09:19:50.027Z" tests="2" failures="0" errors="0" time="0.057">
+    <testcase name="Status is 401" time="0.057" classname="RestfulBookerPlatformQaExercise"/>
+    <testcase name="Response body does not reveal which field failed (no username enumeration)" time="0.057" classname="RestfulBookerPlatformQaExercise"/>
+  </testsuite>
+  <testsuite name="Auth / TC-14a — POST /auth/validate — valid token returns 200" id="224bfc82-dbe6-4c97-94ef-e25694b8e3d8" timestamp="2026-07-01T09:19:50.027Z" tests="1" failures="0" errors="0" time="0.192">
+    <testcase name="Status is 200 for a valid token" time="0.192" classname="RestfulBookerPlatformQaExercise"/>
+  </testsuite>
+  <testsuite name="Auth / TC-14b — POST /auth/validate — invalid token returns 403" id="2298024f-4eb9-44fa-a7b3-36c7de4cf780" timestamp="2026-07-01T09:19:50.027Z" tests="1" failures="0" errors="0" time="0.064">
+    <testcase name="Status is 403 for an invalid token" time="0.064" classname="RestfulBookerPlatformQaExercise"/>
+  </testsuite>
+  <testsuite name="Booking / TC-08 — GET /api/booking — filter by date returns correct bookings" id="7d5dd95f-f12e-4f44-b5ec-4505d56f735d" timestamp="2026-07-01T09:19:50.027Z" tests="3" failures="0" errors="0" time="0.093">
+    <testcase name="Status is 200" time="0.093" classname="RestfulBookerPlatformQaExercise"/>
+    <testcase name="Response contains rooms array" time="0.093" classname="RestfulBookerPlatformQaExercise"/>
+    <testcase name="Response time is acceptable" time="0.093" classname="RestfulBookerPlatformQaExercise"/>
+  </testsuite>
+  <testsuite name="Booking / Setup — POST /api/booking — create test booking (stores bookingId)" id="a8f1919f-3f2d-46dc-bb19-7686eaae2b74" timestamp="2026-07-01T09:19:50.027Z" tests="1" failures="0" errors="0" time="0.315">
+    <testcase name="Status is 200 or 400" time="0.315" classname="RestfulBookerPlatformQaExercise"/>
+  </testsuite>
+  <testsuite name="Booking / TC-17 — DELETE /api/booking/:id — unauthenticated returns 403" id="87ccd613-6b0a-42f0-93ae-09fe24a6ad3d" timestamp="2026-07-01T09:19:50.027Z" tests="1" failures="0" errors="0" time="0.098">
+    <testcase name="Status is 403, 404, or 405" time="0.098" classname="RestfulBookerPlatformQaExercise"/>
+  </testsuite>
+  <testsuite name="Booking / Teardown — DELETE /api/booking/:id — authenticated (cleanup)" id="fea30e97-d634-49e0-a040-e25f3e10f2e1" timestamp="2026-07-01T09:19:50.027Z" tests="1" failures="0" errors="0" time="0.086">
+    <testcase name="Booking deleted (201) or already gone (404) or invalid method (405)" time="0.086" classname="RestfulBookerPlatformQaExercise"/>
+  </testsuite>
+  <testsuite name="Health Checks / GET /api/auth/actuator/health" id="06f37d24-aa5a-43c0-9c54-0a7e1a56ab00" timestamp="2026-07-01T09:19:50.027Z" tests="1" failures="0" errors="0" time="0.060">
+    <testcase name="Auth service is healthy" time="0.060" classname="RestfulBookerPlatformQaExercise"/>
+  </testsuite>
+  <testsuite name="Health Checks / GET /api/booking/actuator/health" id="202a049f-4843-422d-b856-47aba4e80bdc" timestamp="2026-07-01T09:19:50.027Z" tests="1" failures="0" errors="0" time="0.048">
+    <testcase name="Booking service is healthy" time="0.048" classname="RestfulBookerPlatformQaExercise"/>
+  </testsuite>
+</testsuites>
