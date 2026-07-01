@@ -53,6 +53,16 @@ npm run test:e2e
 npm test
 ```
 
+### Verify before push (API + E2E)
+```bash
+npm run verify
+```
+
+### Full local verification (API + E2E + k6)
+```bash
+npm run verify:full
+```
+
 ### Performance tests (k6 — requires k6 installed)
 ```bash
 npm run test:perf

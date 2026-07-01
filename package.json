@@ -4,6 +4,8 @@
   "description": "Automated test suite for Shady Meadows B&B demo — QA Technical Exercise",
   "scripts": {
     "test": "npm run test:api && npm run test:e2e",
+    "verify": "npm run test:api && npm run test:e2e",
+    "verify:full": "npm run test:api && npm run test:e2e && npm run test:perf",
     "test:api": "newman run postman/RestfulBookerPlatform.collection.json --reporters cli,junit --reporter-junit-export results/api-results.xml",
     "test:e2e": "npx playwright test",
     "test:perf": "k6 run k6/auth-load-test.js",
