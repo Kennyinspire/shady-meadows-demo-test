@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>QA Technical Exercise – B&B Demo / Restful Booker</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;font-size:15px;line-height:1.7;color:#1a1a1a;background:#f8f7f4}
+.page{max-width:920px;margin:0 auto;padding:2rem 2rem 4rem}
+.cover{background:#1a1a2e;color:#e8e6df;border-radius:12px;padding:3rem 2.5rem 2.5rem;margin-bottom:2.5rem;position:relative;overflow:hidden}
+.cover::before{content:'';position:absolute;top:-40px;right:-40px;width:200px;height:200px;border-radius:50%;background:#2d4a7a;opacity:.4}
+.cover-tag{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:#7ab3e8;margin-bottom:1rem;position:relative}
+.cover h1{font-size:2rem;font-weight:600;line-height:1.25;margin-bottom:.5rem;position:relative}
+.cover-sub{color:#9ea8b8;font-size:14px;position:relative}
+.cover-meta{display:flex;gap:2rem;margin-top:2rem;padding-top:1.5rem;border-top:1px solid #2d3a50;position:relative}
+.cover-meta-item{font-size:13px}
+.cover-meta-label{color:#7ab3e8;font-size:11px;text-transform:uppercase;letter-spacing:.08em}
+.task-header{display:flex;align-items:flex-start;gap:1rem;margin:2.5rem 0 1.25rem;padding-bottom:.75rem;border-bottom:2px solid #1a1a2e}
+.task-number{background:#1a1a2e;color:#7ab3e8;font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;padding:4px 10px;border-radius:4px;white-space:nowrap;margin-top:3px}
+.task-header h2{font-size:1.3rem;font-weight:600;color:#1a1a2e;line-height:1.3}
+.task-header p{font-size:13px;color:#666;margin-top:2px}
+h3{font-size:1rem;font-weight:600;color:#1a1a2e;margin:1.5rem 0 .5rem}
+p{margin-bottom:.75rem;color:#333}
+.card{background:#fff;border-radius:10px;border:1px solid #e4e2dc;padding:1.25rem 1.5rem;margin-bottom:1rem}
+.card-title{font-size:14px;font-weight:600;color:#1a1a2e;margin-bottom:.5rem}
+.card p{font-size:14px;margin-bottom:.5rem}
+.card p:last-child{margin-bottom:0}
+.steps{display:flex;flex-direction:column;gap:.75rem}
+.step{display:flex;gap:1rem;background:#fff;border-radius:10px;border:1px solid #e4e2dc;padding:1rem 1.25rem;align-items:flex-start}
+.step-num{min-width:28px;height:28px;background:#1a1a2e;color:#7ab3e8;font-size:12px;font-weight:700;border-radius:50%;display:flex;align-items:center;justify-content:center;margin-top:1px}
+.step-body{flex:1}
+.step-body strong{font-size:14px;color:#1a1a2e;display:block;margin-bottom:3px}
+.step-body p{font-size:13.5px;margin:0;color:#444}
+.scenario-table{width:100%;border-collapse:collapse;font-size:13px;margin-bottom:1.5rem;background:#fff;border-radius:10px;overflow:hidden;border:1px solid #e4e2dc}
+.scenario-table thead tr{background:#1a1a2e;color:#e8e6df}
+.scenario-table th{padding:10px 12px;text-align:left;font-size:11px;font-weight:600;letter-spacing:.07em;text-transform:uppercase}
+.scenario-table td{padding:9px 12px;border-bottom:1px solid #f0ede7;vertical-align:top;line-height:1.5;color:#333}
+.scenario-table tr:last-child td{border-bottom:none}
+.scenario-table tr:nth-child(even){background:#faf9f7}
+.badge{display:inline-block;font-size:11px;font-weight:600;padding:2px 8px;border-radius:20px;white-space:nowrap}
+.badge-api{background:#dbeafe;color:#1e40af}
+.badge-ui{background:#dcfce7;color:#166534}
+.badge-perf{background:#fef3c7;color:#92400e}
+.badge-sec{background:#fce7f3;color:#9d174d}
+.badge-exploratory{background:#f1f5f9;color:#334155}
+.badge-auto{background:#d1fae5;color:#065f46}
+.badge-manual{background:#fef9c3;color:#713f12}
+.badge-p1{background:#fee2e2;color:#991b1b}
+.badge-p2{background:#fef3c7;color:#92400e}
+.badge-p3{background:#e0f2fe;color:#0369a1}
+.pyramid{display:flex;flex-direction:column;align-items:center;margin:1rem 0 1.5rem}
+.pyramid-row{display:flex;align-items:center;justify-content:center;border-radius:6px;padding:10px 1rem;color:#fff;font-size:13px;font-weight:600}
+.pyramid-e2e{width:280px;background:#5b21b6}
+.pyramid-int{width:380px;background:#1e40af}
+.pyramid-unit{width:500px;background:#1a1a2e}
+.pyramid-label{font-size:11px;font-weight:400;opacity:.85;margin-left:8px}
+.pipeline{display:flex;flex-direction:column;gap:0;position:relative}
+.pipeline::before{content:'';position:absolute;left:20px;top:0;bottom:0;width:2px;background:#e4e2dc}
+.pipeline-stage{display:flex;gap:1rem;align-items:flex-start;margin-bottom:1rem;position:relative}
+.pipeline-dot{min-width:42px;height:42px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px;z-index:1;border:3px solid #f8f7f4}
+.pipeline-stage:nth-child(1) .pipeline-dot{background:#7ab3e8}
+.pipeline-stage:nth-child(2) .pipeline-dot{background:#4ade80}
+.pipeline-stage:nth-child(3) .pipeline-dot{background:#fbbf24}
+.pipeline-stage:nth-child(4) .pipeline-dot{background:#f87171}
+.pipeline-stage:nth-child(5) .pipeline-dot{background:#a78bfa}
+.pipeline-content{background:#fff;border:1px solid #e4e2dc;border-radius:10px;padding:1rem 1.25rem;flex:1}
+.pipeline-content strong{font-size:14px;color:#1a1a2e;display:block;margin-bottom:4px}
+.pipeline-content p{font-size:13px;color:#555;margin:0 0 6px}
+.code-block{background:#1a1a2e;color:#e2e8f0;border-radius:10px;padding:1.25rem 1.5rem;font-family:'Courier New',monospace;font-size:12.5px;line-height:1.7;overflow-x:auto;margin:1rem 0 1.5rem;white-space:pre}
+.code-block .c{color:#64748b}
+.code-block .k{color:#7ab3e8}
+.code-block .v{color:#86efac}
+.code-block .s{color:#fde68a}
+.code-block .kw{color:#f9a8d4}
+.inline-code{background:#f4f3f0;border-radius:4px;padding:2px 6px;font-family:'Courier New',monospace;font-size:12.5px;color:#1a1a2e}
+.matrix{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin:1rem 0 1.5rem}
+.matrix-cell{background:#fff;border:1px solid #e4e2dc;border-radius:10px;padding:1rem 1.25rem}
+.matrix-cell h4{font-size:13px;font-weight:600;color:#1a1a2e;margin-bottom:6px}
+.matrix-cell ul{padding-left:1.2rem}
+.matrix-cell li{font-size:13px;color:#444;margin-bottom:3px}
+.story-card{background:#fff;border-left:4px solid #1a1a2e;border-radius:0 10px 10px 0;padding:1rem 1.25rem;margin-bottom:1rem}
+.story-label{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:#7ab3e8;margin-bottom:4px}
+.story-card p{font-size:13.5px;margin:0 0 6px}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem}
+.note{background:#eff6ff;border:1px solid #bfdbfe;border-radius:8px;padding:.75rem 1rem;font-size:13px;color:#1e3a5f;margin-bottom:1rem}
+.warn{background:#fffbeb;border:1px solid #fcd34d;border-radius:8px;padding:.75rem 1rem;font-size:13px;color:#78350f;margin-bottom:1rem}
+ul.plain{padding-left:1.3rem;margin-bottom:.75rem}
+ul.plain li{font-size:14px;color:#333;margin-bottom:3px}
+.toc{background:#fff;border:1px solid #e4e2dc;border-radius:10px;padding:1.25rem 1.5rem;margin-bottom:2rem}
+.toc h3{margin-top:0}
+.toc ul{padding-left:0;list-style:none;margin:0}
+.toc li{padding:4px 0;border-bottom:1px solid #f0ede7}
+.toc li:last-child{border-bottom:none}
+.toc a{text-decoration:none;color:#1a1a2e;font-size:14px}
+.toc a:hover{color:#2d4a7a}
+.ui-observation{background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;padding:.75rem 1rem;font-size:13px;color:#14532d;margin-bottom:.75rem}
+.ui-observation strong{display:block;margin-bottom:2px;color:#166534}
+</style>
+</head>
+<body>
+<div class="page">
+
+<div class="cover">
+  <div class="cover-tag">Adeyemi QA Technical Exercise Submission</div>
+  <h1>Shady Meadows B&amp;B — Test Strategy &amp; Automation</h1>
+  <div class="cover-sub">Availability Checker Feature · Restful Booker Platform API · CI/CD Guide</div>
+  <div class="cover-meta">
+    <div class="cover-meta-item"><div class="cover-meta-label">Website</div>automationintesting.online</div>
+    <div class="cover-meta-item"><div class="cover-meta-label">Repo structure</div>README · Playwright · Newman · k6 · GitHub Actions</div>
+    <div class="cover-meta-item"><div class="cover-meta-label">Tasks</div>1 · 2 · 3</div>
+  </div>
+</div>
+
+<div class="toc">
+  <h3>Contents</h3>
+  <ul>
+    <li><a href="#task1">Task 1 – Verification approach &amp; user story alignment</a></li>
+    <li><a href="#task2">Task 2 – Automated functional &amp; non-functional scenarios</a></li>
+    <li><a href="#task3">Task 3 – CI/CD implementation guide</a></li>
+  </ul>
+</div>
+
+<!-- ═══ TASK 1 ═══ -->
+<div id="task1">
+<div class="task-header">
+  <span class="task-number">Task 1</span>
+  <div><h2>Verification approach &amp; user story alignment</h2><p>How I would confirm scenarios are correct and aligned with user needs</p></div>
+</div>
+
+<h3>1.1 — Understand the user stories before writing a single test</h3>
+<p>Before touching any tooling, I would hold a short refinement session (or asynchronous review) with the product owner and developers to walk through each user story and its acceptance criteria. The goal is to surface ambiguity early. Specific questions I would raise for this feature:</p>
+
+<div class="two-col">
+  <div class="card">
+    <div class="card-title">User Story 1 — questions</div>
+    <p>The date inputs appear to be free-text (<span class="inline-code">DD/MM/YYYY</span>) — should they also accept <span class="inline-code">YYYY-MM-DD</span> or only the displayed format? Is the "Check Availability" button disabled until both dates are filled? What is the minimum/maximum date range the user can select? Does the calendar prevent past dates? What constitutes a "valid" date range (e.g. minimum 1 night)?</p>
+  </div>
+  <div class="card">
+    <div class="card-title">User Story 2 — questions</div>
+    <p>When availability results are returned, do they replace the "Our Rooms" section or appear above/below it? How should the UI communicate "no rooms available" — a message, an empty list, or a banner? Should partially-booked rooms (e.g. one night free in a 3-night range) be shown or hidden? Is the availability driven purely by the API or also by front-end filtering?</p>
+  </div>
+</div>
+<div class="card">
+  <div class="card-title">User Story 3 — questions</div>
+  <p>The "Admin" link in the top nav suggests the login page is accessible via <span class="inline-code">/admin</span> or similar. Is login rate-limited? Does a failed attempt show a generic "invalid credentials" message (secure) or specific field errors (potential username enumeration risk)? The 5-second SLA — is this measured server-side or including full page render?</p>
+</div>
+
+<h3>1.2 — Map acceptance criteria to testable conditions (BDD style)</h3>
+
+<p>I convert each acceptance criterion into a Given/When/Then statement. This creates a shared language between product, dev, and QA, and later maps directly to automated test cases.</p>
+
+<div class="story-card">
+  <div class="story-label">User Story 1 — AC 1 (widget visible)</div>
+  <p><strong>Given</strong> a user navigates to automationintesting.online on a desktop browser<br>
+  <strong>When</strong> the page loads<br>
+  <strong>Then</strong> they can see the "Check Availability &amp; Book Your Stay" section without scrolling, with two date inputs pre-filled with today's date and tomorrow's date</p>
+</div>
+
+<div class="story-card">
+  <div class="story-label">User Story 1 — AC 3 (valid dates → results)</div>
+  <p><strong>Given</strong> a user is on the landing page<br>
+  <strong>When</strong> they enter a valid check-in and check-out date, and click "Check Availability"<br>
+  <strong>Then</strong> a list of available rooms is displayed within 3 seconds, each showing a room name, price per night, and a "Book now" button</p>
+</div>
+
+<div class="story-card">
+  <div class="story-label">User Story 2 — AC 3 (no rooms → message)</div>
+  <p><strong>Given</strong> all rooms (Single, Double, Suite) are booked for the selected date range<br>
+  <strong>When</strong> the user clicks "Check Availability"<br>
+  <strong>Then</strong> the page displays a clear message informing the user that no rooms are available for those dates — and no room cards are shown</p>
+</div>
+
+<div class="story-card">
+  <div class="story-label">User Story 3 — AC 1 (auth within 5s)</div>
+  <p><strong>Given</strong> a user is on the admin login page (<span class="inline-code">/admin</span>)<br>
+  <strong>When</strong> they enter valid admin credentials and click Login<br>
+  <strong>Then</strong> they are authenticated and the admin panel is visible within 5 seconds of clicking the button</p>
+</div>
+
+<h3>1.3 — Exploratory test charters</h3>
+<div class="steps">
+  <div class="step"><div class="step-num">A</div><div class="step-body"><strong>Charter: Date input validation &amp; format tolerance</strong><p>The inputs appear to be free-text. Explore what happens with invalid formats (e.g. 2026-06-28, June 28, 28-06-2026), non-date strings, single-digit days/months without leading zeros, and copy-pasted dates from a calendar app. Does the system silently ignore the input, show an error, or crash?</p></div></div>
+  <div class="step"><div class="step-num">B</div><div class="step-body"><strong>Charter: "No availability" state discovery</strong><p>Pre-seed bookings for all three room types (Single, Double, Suite) for a future date range, then use the Availability Checker to search that range. Document exactly what the UI shows — is there a specific message, an empty list, or nothing at all? This informs TC-04.</p></div></div>
+  <div class="step"><div class="step-num">C</div><div class="step-body"><strong>Charter: Concurrent availability & race conditions</strong><p>Open two browser sessions simultaneously. Book the last available room in session A and observe what session B displays — is availability updated in real time or on next search?</p></div></div>
+  <div class="step"><div class="step-num">D</div><div class="step-body"><strong>Charter: Admin login error messaging</strong><p>Submit invalid credentials and inspect the error message. It should be generic ("Invalid credentials") and not reveal whether the username or password was wrong (username enumeration risk). Also test: SQL injection in both fields, very long strings (&gt;500 chars), and Unicode characters.</p></div></div>
+</div>
+
+<h3>1.4 — Definition of Ready &amp; Definition of Done</h3>
+<div class="two-col">
+  <div class="card">
+    <div class="card-title">Definition of Ready (before sprint)</div>
+    <ul class="plain">
+      <li>Acceptance criteria are unambiguous and testable</li>
+      <li>Exact "no availability" message wording agreed with PO</li>
+      <li>Date input format documented (DD/MM/YYYY confirmed as required)</li>
+      <li>Admin login URL confirmed (<span class="inline-code">/admin</span>)</li>
+      <li>Test environment stable; API Postman collection accessible</li>
+      <li>Edge cases discussed and captured as separate ACs or out-of-scope decisions</li>
+    </ul>
+  </div>
+  <div class="card">
+    <div class="card-title">Definition of Done (before sign-off)</div>
+    <ul class="plain">
+      <li>All P1 automated tests passing in CI</li>
+      <li>All ACs have at least one passing automated test</li>
+      <li>Performance threshold validated (auth ≤5 s) via k6</li>
+      <li>0 critical axe-core violations on landing page</li>
+      <li>Exploratory testing completed with no P1/P2 open defects</li>
+      <li>Playwright HTML report archived as CI artefact</li>
+      <li>Regression suite not degraded</li>
+    </ul>
+  </div>
+</div>
+</div><!-- /task1 -->
+
+
+<!-- ═══ TASK 2 ═══ -->
+<div id="task2">
+<div class="task-header">
+  <span class="task-number">Task 2</span>
+  <div><h2>Automated functional &amp; non-functional scenarios</h2><p>Runnable Playwright + Newman + k6 test scripts are included in the repo alongside this document</p></div>
+</div>
+
+<div class="note"><strong>Execution:</strong> Yes — the test scripts in this submission are real, runnable code (not pseudocode). See <span class="inline-code">README.md</span> for setup and run instructions. The suite runs against <span class="inline-code">automationintesting.online</span> by default.</div>
+
+<h3>2.1 — Automation pyramid strategy</h3>
+<p>I structure automation across three levels. More tests at the lower levels keeps the suite fast and reliable; UI/E2E tests cover only the critical user-facing journeys.</p>
+<div class="pyramid">
+  <div class="pyramid-row pyramid-e2e">E2E / UI Tests (Playwright)<span class="pyramid-label">~15%</span></div>
+  <div class="pyramid-row pyramid-int">API / Integration — Newman (Postman) <span class="pyramid-label">~35%</span></div>
+  <div class="pyramid-row pyramid-unit">Contract &amp; health checks — Newman / Pact <span class="pyramid-label">~50%</span></div>
+</div>
+
+<h3>2.2 — Tooling rationale</h3>
+<div class="two-col">
+  <div class="card">
+    <div class="card-title">Playwright (TypeScript) — E2E</div>
+    <p>Cross-browser (Chromium, Firefox, WebKit), built-in waiting, screenshot/video on failure. Ideal for the date-picker interactions in the Availability Checker which require real browser rendering.</p>
+  </div>
+  <div class="card">
+    <div class="card-title">Newman — API tests</div>
+    <p>The team already has Postman collections for Restful Booker Platform. Newman runs them in CI with zero extra tooling investment. Tests execute in seconds and catch broken API contracts before the slower E2E suite runs.</p>
+  </div>
+</div>
+<div class="two-col">
+  <div class="card">
+    <div class="card-title">k6 — Performance</div>
+    <p>JavaScript-based, integrates naturally with the Node ecosystem, and has first-class GitHub Actions support. Thresholds are defined in code so a breach fails the pipeline automatically — no manual result interpretation needed.</p>
+  </div>
+  <div class="card">
+    <div class="card-title">axe-core / @axe-core/playwright — Accessibility</div>
+    <p>Integrated directly into the Playwright test run. Scans the live rendered DOM (not static HTML), catches WCAG 2.1 AA violations, and reports exactly which elements fail and why.</p>
+  </div>
+</div>
+
+<h3>2.3 — Functional test scenarios (User Stories 1 &amp; 2)</h3>
+<table class="scenario-table">
+  <thead><tr><th>#</th><th>Scenario</th><th>Type</th><th>Level</th><th>Priority</th><th>Automate?</th><th>File</th></tr></thead>
+  <tbody>
+    <tr><td>TC-01</td><td>"Check Availability &amp; Book Your Stay" widget is visible on page load without scrolling</td><td><span class="badge badge-ui">UI</span></td><td>E2E</td><td><span class="badge badge-p1">P1</span></td><td><span class="badge badge-auto">Automate</span></td><td><span class="inline-code">availability-checker.spec.ts</span></td></tr>
+    <tr><td>TC-02</td><td>Date inputs are pre-filled with today and tomorrow in DD/MM/YYYY format</td><td><span class="badge badge-ui">UI</span></td><td>E2E</td><td><span class="badge badge-p1">P1</span></td><td><span class="badge badge-auto">Automate</span></td><td><span class="inline-code">availability-checker.spec.ts</span></td></tr>
+    <tr><td>TC-03</td><td>Valid future date range → available rooms are displayed within 3 seconds</td><td><span class="badge badge-ui">UI</span></td><td>E2E</td><td><span class="badge badge-p1">P1</span></td><td><span class="badge badge-auto">Automate</span></td><td><span class="inline-code">availability-checker.spec.ts</span></td></tr>
+    <tr><td>TC-04</td><td>A room pre-booked via API for the selected dates does NOT appear in availability results</td><td><span class="badge badge-ui">UI</span> <span class="badge badge-api">API</span></td><td>E2E + Integration</td><td><span class="badge badge-p1">P1</span></td><td><span class="badge badge-auto">Automate</span></td><td><span class="inline-code">availability-checker.spec.ts</span></td></tr>
+    <tr><td>TC-05</td><td>When all rooms are booked for the selected range, a "no rooms available" message is shown</td><td><span class="badge badge-ui">UI</span></td><td>E2E</td><td><span class="badge badge-p1">P1</span></td><td><span class="badge badge-auto">Automate</span></td><td><span class="inline-code">availability-checker.spec.ts</span></td></tr>
+    <tr><td>TC-06</td><td>Check-out date set before check-in date → no results returned (or validation shown)</td><td><span class="badge badge-ui">UI</span></td><td>E2E</td><td><span class="badge badge-p2">P2</span></td><td><span class="badge badge-auto">Automate</span></td><td><span class="inline-code">availability-checker.spec.ts</span></td></tr>
+    <tr><td>TC-07</td><td>Single-night stay (1 night) returns valid results</td><td><span class="badge badge-ui">UI</span></td><td>E2E</td><td><span class="badge badge-p2">P2</span></td><td><span class="badge badge-auto">Automate</span></td><td><span class="inline-code">availability-checker.spec.ts</span></td></tr>
+    <tr><td>TC-08</td><td>API GET /api/room with date filter returns rooms for the selected range</td><td><span class="badge badge-api">API</span></td><td>Integration</td><td><span class="badge badge-p2">P2</span></td><td><span class="badge badge-auto">Automate</span></td><td><span class="inline-code">RestfulBookerPlatform.collection.json</span></td></tr>
+    <tr><td>TC-09</td><td>Each available room card shows a room type name, price per night, and "Book now" button</td><td><span class="badge badge-ui">UI</span></td><td>E2E</td><td><span class="badge badge-p2">P2</span></td><td><span class="badge badge-auto">Automate</span></td><td><span class="inline-code">availability-checker.spec.ts</span></td></tr>
+    <tr><td>TC-EX1</td><td>Free-text date field with invalid format (e.g. 28-06-2026) — observe system behaviour</td><td><span class="badge badge-ui">UI</span></td><td>Exploratory</td><td><span class="badge badge-p2">P2</span></td><td><span class="badge badge-exploratory">Exploratory first</span></td><td>Charter A</td></tr>
+    <tr><td>TC-EX2</td><td>Mobile viewport — date inputs and "Check Availability" button are usable on 375px width</td><td><span class="badge badge-ui">UI</span></td><td>Exploratory</td><td><span class="badge badge-p3">P3</span></td><td><span class="badge badge-exploratory">Exploratory first</span></td><td>Charter C</td></tr>
+  </tbody>
+</table>
+
+<h3>2.4 — Functional test scenarios (User Story 3 — Admin auth)</h3>
+<table class="scenario-table">
+  <thead><tr><th>#</th><th>Scenario</th><th>Type</th><th>Level</th><th>Priority</th><th>Automate?</th><th>File</th></tr></thead>
+  <tbody>
+    <tr><td>TC-10</td><td>Valid credentials via UI → admin panel loads within 5 seconds</td><td><span class="badge badge-ui">UI</span></td><td>E2E</td><td><span class="badge badge-p1">P1</span></td><td><span class="badge badge-auto">Automate</span></td><td><span class="inline-code">admin-auth.spec.ts</span></td></tr>
+    <tr><td>TC-11</td><td>POST /api/auth/login — valid credentials return 200 + token; response within 5 s</td><td><span class="badge badge-api">API</span></td><td>Integration</td><td><span class="badge badge-p1">P1</span></td><td><span class="badge badge-auto">Automate</span></td><td><span class="inline-code">admin-auth.spec.ts</span> + Newman</td></tr>
+    <tr><td>TC-12</td><td>POST /api/auth/login — invalid password returns 401 with no token</td><td><span class="badge badge-api">API</span></td><td>Integration</td><td><span class="badge badge-p1">P1</span></td><td><span class="badge badge-auto">Automate</span></td><td><span class="inline-code">admin-auth.spec.ts</span> + Newman</td></tr>
+    <tr><td>TC-13</td><td>POST /api/auth/login — invalid username returns 401; error is generic (no field enumeration)</td><td><span class="badge badge-api">API</span></td><td>Integration</td><td><span class="badge badge-p1">P1</span></td><td><span class="badge badge-auto">Automate</span></td><td><span class="inline-code">admin-auth.spec.ts</span> + Newman</td></tr>
+    <tr><td>TC-14</td><td>POST /api/auth/validate — valid token → 200; invalid token → 403</td><td><span class="badge badge-api">API</span></td><td>Integration</td><td><span class="badge badge-p2">P2</span></td><td><span class="badge badge-auto">Automate</span></td><td><span class="inline-code">admin-auth.spec.ts</span> + Newman</td></tr>
+    <tr><td>TC-15</td><td>Blank username field → login form does not submit</td><td><span class="badge badge-ui">UI</span></td><td>E2E</td><td><span class="badge badge-p2">P2</span></td><td><span class="badge badge-auto">Automate</span></td><td><span class="inline-code">admin-auth.spec.ts</span></td></tr>
+    <tr><td>TC-16</td><td>Blank password field → login form does not submit</td><td><span class="badge badge-ui">UI</span></td><td>E2E</td><td><span class="badge badge-p2">P2</span></td><td><span class="badge badge-auto">Automate</span></td><td><span class="inline-code">admin-auth.spec.ts</span></td></tr>
+    <tr><td>TC-17</td><td>Unauthenticated DELETE /api/booking/:id → API returns 403, 404, or 405</td><td><span class="badge badge-sec">Security</span></td><td>API</td><td><span class="badge badge-p1">P1</span></td><td><span class="badge badge-auto">Automate</span></td><td><span class="inline-code">admin-auth.spec.ts</span> + Newman</td></tr>
+    <tr><td>TC-EX3</td><td>SQL injection in login username field — system should return 403, not 500 or data</td><td><span class="badge badge-sec">Security</span></td><td>Exploratory</td><td><span class="badge badge-p1">P1</span></td><td><span class="badge badge-exploratory">Exploratory + DAST</span></td><td>Charter D</td></tr>
+  </tbody>
+</table>
+
+<h3>2.5 — Non-functional scenarios</h3>
+<table class="scenario-table">
+  <thead><tr><th>#</th><th>Scenario</th><th>Type</th><th>Tool</th><th>Threshold</th><th>File</th></tr></thead>
+  <tbody>
+    <tr><td>NF-01</td><td>Admin authentication response time — 1 concurrent user</td><td><span class="badge badge-perf">Performance</span></td><td>k6</td><td>p95 ≤ 5 s (per AC)</td><td><span class="inline-code">auth-load-test.js</span></td></tr>
+    <tr><td>NF-02</td><td>Admin authentication response time — 10 concurrent users, 0% error rate</td><td><span class="badge badge-perf">Performance</span></td><td>k6</td><td>p95 ≤ 5 s; errors &lt; 1%</td><td><span class="inline-code">auth-load-test.js</span></td></tr>
+    <tr><td>NF-03</td><td>Availability Checker API response time at 20 virtual users</td><td><span class="badge badge-perf">Performance</span></td><td>k6</td><td>p95 ≤ 3 s</td><td>extend auth-load-test.js</td></tr>
+    <tr><td>NF-04</td><td>Landing page has no critical or serious axe-core violations (WCAG 2.1 AA)</td><td><span class="badge badge-ui">Accessibility</span></td><td>axe-core + Playwright</td><td>0 critical/serious violations</td><td><span class="inline-code">accessibility.spec.ts</span></td></tr>
+    <tr><td>NF-05</td><td>Availability Checker is navigable by keyboard alone (tab → fill → submit)</td><td><span class="badge badge-ui">Accessibility</span></td><td>Playwright</td><td>All interactions completable</td><td><span class="inline-code">accessibility.spec.ts</span></td></tr>
+    <tr><td>NF-06</td><td>API rate limiting — 200 rapid login requests return 200 or 403; no 500 errors</td><td><span class="badge badge-sec">Security</span></td><td>k6 / Newman</td><td>0 × HTTP 500 responses</td><td>k6 script</td></tr>
+    <tr><td>NF-07</td><td>API response contract — GET /api/room schema matches Postman collection definition</td><td><span class="badge badge-api">Contract</span></td><td>Newman</td><td>Schema validation passes on every CI run</td><td>Newman collection</td></tr>
+  </tbody>
+</table>
+
+<h3>2.6 — Why some scenarios stay as exploratory (for now)</h3>
+<div class="two-col">
+  <div class="card">
+    <div class="card-title">Deferred from automation</div>
+    <ul class="plain">
+      <li><strong>Invalid date format behaviour</strong> — the system's response to malformed input is unknown. Explore first, then automate once the expected behaviour is agreed.</li>
+      <li><strong>"No availability" message wording</strong> — the exact text is not in any AC. The selector cannot be written until the wording is confirmed.</li>
+      <li><strong>Mobile responsiveness</strong> — the date inputs on a 375px screen may behave differently. Explore first with Playwright device emulation.</li>
+      <li><strong>Concurrent booking race condition</strong> — two users booking the last room simultaneously. Needs a controlled environment and coordination to reproduce reliably.</li>
+    </ul>
+  </div>
+  <div class="card">
+    <div class="card-title">When they will be automated</div>
+    <p>Once the behaviour is understood and the expected outcome is agreed in a refinement session, each exploratory finding becomes a scripted test. The typical flow is: explore → raise defect or confirm expected behaviour → write regression test → add to CI.</p>
+    <p>Mobile E2E tests will be added by extending <span class="inline-code">playwright.config.ts</span> with a <span class="inline-code">Mobile Chrome</span> device project — no new infrastructure needed.</p>
+  </div>
+</div>
+</div><!-- /task2 -->
+
+
+<!-- ═══ TASK 3 ═══ -->
+<div id="task3">
+<div class="task-header">
+  <span class="task-number">Task 3</span>
+  <div><h2>CI/CD implementation guide</h2><p>GitHub Actions pipeline — the same stage structure applies to GitLab CI, Jenkins, or Azure DevOps</p></div>
+</div>
+
+<div class="note">This guide uses <strong>GitHub Actions</strong> as the CI/CD platform (the most common choice for teams using GitHub). The same stage structure applies directly to GitLab CI, Jenkins, or Azure DevOps — only the YAML syntax differs.</div>
+
+<h3>3.1 — Pipeline overview</h3>
+<div class="pipeline">
+  <div class="pipeline-stage">
+    <div class="pipeline-dot">📦</div>
+    <div class="pipeline-content">
+      <strong>Stage 1 — Install &amp; lint (every PR and push)</strong>
+      <p>Runs first. Installs Node dependencies, compiles TypeScript, runs ESLint. Fails fast — no point running tests against code that does not compile.</p>
+    </div>
+  </div>
+  <div class="pipeline-stage">
+    <div class="pipeline-dot">🧪</div>
+    <div class="pipeline-content">
+      <strong>Stage 2 — API tests via Newman (every PR and push)</strong>
+      <p>Runs the Postman collection against the test environment. Executes in seconds, catches broken contracts early. JUnit XML results are uploaded as artefacts. E2E stage only starts if this passes.</p>
+    </div>
+  </div>
+  <div class="pipeline-stage">
+    <div class="pipeline-dot">🌐</div>
+    <div class="pipeline-content">
+      <strong>Stage 3 — E2E tests via Playwright (every PR and push)</strong>
+      <p>Runs all <span class="inline-code">.spec.ts</span> files including availability-checker, admin-auth, and accessibility. Chromium only in CI for speed; Firefox/WebKit added on merges to <span class="inline-code">main</span>. Screenshots, videos, and traces captured on failure and uploaded as artefacts (retained 30 days).</p>
+    </div>
+  </div>
+  <div class="pipeline-stage">
+    <div class="pipeline-dot">⚡</div>
+    <div class="pipeline-content">
+      <strong>Stage 4 — Performance tests via k6 (nightly only)</strong>
+      <p>Only triggered by the <span class="inline-code">schedule</span> event (nightly cron). Runs the auth load test against the test environment. A threshold breach (p95 &gt; 5 s) fails the pipeline and triggers a Slack notification.</p>
+    </div>
+  </div>
+  <div class="pipeline-stage">
+    <div class="pipeline-dot">📊</div>
+    <div class="pipeline-content">
+      <strong>Stage 5 — Notify on failure</strong>
+      <p>JUnit XML results are published to GitHub Actions test summary.  Slack notification on failure sent to the QA channel.Only fires on <span class="inline-code">main</span> branch failures to avoid noise from feature branches.</p>
+    </div>
+  </div>
+</div>
+
+<h3>3.2 — GitHub Actions workflow (full <span class="inline-code">.github/workflows/test.yml</span>)</h3>
+<div class="note">The complete workflow file is included in the repository at <span class="inline-code">.github/workflows/test.yml</span>. The key structure is shown here for reference.</div>
+
+<div class="code-block"><span class="c"># Triggers: PR to main, push to main/develop, nightly cron</span>
+<span class="k">on:</span>
+  <span class="k">push:</span>
+    <span class="k">branches:</span> <span class="s">[ main, develop ]</span>
+  <span class="k">pull_request:</span>
+    <span class="k">branches:</span> <span class="s">[ main ]</span>
+  <span class="k">schedule:</span>
+    - <span class="k">cron:</span> <span class="s">'0 2 * * *'</span>
+
+<span class="c"># Secrets with safe defaults for public test env</span>
+<span class="k">env:</span>
+  <span class="k">BASE_URL:</span>       <span class="s">${{ secrets.BASE_URL || 'https://automationintesting.online' }}</span>
+  <span class="k">API_BASE_URL:</span>   <span class="s">${{ secrets.API_BASE_URL || 'https://automationintesting.online' }}</span>
+  <span class="k">ADMIN_USERNAME:</span> <span class="s">${{ secrets.ADMIN_USERNAME || 'admin' }}</span>
+  <span class="k">ADMIN_PASSWORD:</span> <span class="s">${{ secrets.ADMIN_PASSWORD || 'password' }}</span>
+
+<span class="k">jobs:</span>
+  <span class="c"># Stage 2 — Newman API tests</span>
+  <span class="k">api-tests:</span>
+    <span class="k">runs-on:</span> <span class="s">ubuntu-latest</span>
+    <span class="k">steps:</span>
+      - <span class="k">uses:</span> <span class="s">actions/checkout@v4</span>
+      - <span class="k">run:</span> <span class="s">npm install -g newman newman-reporter-junitfull</span>
+      - <span class="k">run:</span> |
+          newman run postman/RestfulBookerPlatform.collection.json \
+            --env-var <span class="s">"baseUrl=${{ env.API_BASE_URL }}"</span> \
+            --reporters cli,junitfull \
+            --reporter-junitfull-export results/api-results.xml
+
+  <span class="c"># Stage 3 — Playwright E2E (only if API tests pass)</span>
+  <span class="k">e2e-tests:</span>
+    <span class="k">needs:</span> <span class="s">api-tests</span>
+    <span class="k">runs-on:</span> <span class="s">ubuntu-latest</span>
+    <span class="k">steps:</span>
+      - <span class="k">uses:</span> <span class="s">actions/checkout@v4</span>
+      - <span class="k">uses:</span> <span class="s">actions/setup-node@v4</span>
+        <span class="k">with:</span> <span class="k">node-version:</span> <span class="s">'20'</span>
+      - <span class="k">run:</span> <span class="s">npm ci</span>
+      - <span class="k">run:</span> <span class="s">npx playwright install --with-deps chromium</span>
+      - <span class="k">run:</span> <span class="s">npx playwright test</span>
+      - <span class="k">uses:</span> <span class="s">actions/upload-artifact@v4</span>
+        <span class="kw">if:</span> <span class="s">always()</span>          <span class="c"># upload even if tests fail</span>
+        <span class="k">with:</span>
+          <span class="k">name:</span> <span class="s">playwright-report</span>
+          <span class="k">path:</span> <span class="s">playwright-report/</span>
+          <span class="k">retention-days:</span> <span class="v">30</span>
+
+  <span class="c"># Stage 4 — k6 performance (nightly only)</span>
+  <span class="k">performance-tests:</span>
+    <span class="k">needs:</span> <span class="s">e2e-tests</span>
+    <span class="kw">if:</span> <span class="s">github.event_name == 'schedule'</span>
+    <span class="k">runs-on:</span> <span class="s">ubuntu-latest</span>
+    <span class="k">steps:</span>
+      - <span class="k">uses:</span> <span class="s">actions/checkout@v4</span>
+      - <span class="k">uses:</span> <span class="s">grafana/setup-k6-action@v1</span>
+      - <span class="k">run:</span> |
+          <span class="s">k6 run k6/auth-load-test.js \</span>
+          <span class="s">  --out json=results/k6-results.json</span>
+        <span class="k">env:</span>
+          <span class="k">K6_BASE_URL:</span>    <span class="s">${{ env.API_BASE_URL }}</span>
+          <span class="k">ADMIN_USERNAME:</span> <span class="s">${{ env.ADMIN_USERNAME }}</span>
+          <span class="k">ADMIN_PASSWORD:</span> <span class="s">${{ env.ADMIN_PASSWORD }}</span></div>
+
+<h3>3.3 — Repository setup steps (one-time)</h3>
+<div class="steps">
+  <div class="step"><div class="step-num">1</div><div class="step-body"><strong>Create the repository</strong><p>Create a new public or private GitHub repository. Push the project code from this zip. The reviewer can then clone it with <span class="inline-code">git clone</span> and run <span class="inline-code">npm install</span> to get started.</p></div></div>
+  <div class="step"><div class="step-num">2</div><div class="step-body"><strong>Add repository secrets</strong><p>In the GitHub repo: Settings → Secrets and variables → Actions → New repository secret. Add: <span class="inline-code">BASE_URL</span>, <span class="inline-code">API_BASE_URL</span>, <span class="inline-code">ADMIN_USERNAME</span>, <span class="inline-code">ADMIN_PASSWORD</span>, and optionally <span class="inline-code">SLACK_WEBHOOK_URL</span>. Credentials never appear in the workflow YAML or logs.</p></div></div>
+  <div class="step"><div class="step-num">3</div><div class="step-body"><strong>Verify the first pipeline run</strong><p>Open a pull request or push to <span class="inline-code">main</span>. Navigate to Actions tab → select the run → confirm all stages pass. The Playwright HTML report will appear as a downloadable artefact.</p></div></div>
+  <div class="step"><div class="step-num">4</div><div class="step-body"><strong>Verify nightly performance run</strong><p>The k6 stage triggers on <span class="inline-code">schedule</span> only. To test it manually: in Actions, select the workflow and click "Run workflow" — this triggers it immediately without waiting for 02:00 UTC.</p></div></div>
+</div>
+
+<h3>3.4 — Environment &amp; test data strategy</h3>
+<div class="two-col">
+  <div class="card">
+    <div class="card-title">Environment tiers</div>
+    <ul class="plain">
+      <li><strong>Local:</strong> Developers run <span class="inline-code">npm run test:api</span> and <span class="inline-code">npm run test:e2e</span> before committing.</li>
+      <li><strong>CI/Test:</strong> automationintesting.online (public test environment). API and E2E run here on every PR.</li>
+      <li><strong>Pre-release gate:</strong> Full regression + k6 performance run before any release. Manual exploratory sign-off by QE.</li>
+    </ul>
+  </div>
+  <div class="card">
+    <div class="card-title">Test data management</div>
+    <ul class="plain">
+      <li>Bookings created via POST /api/booking at test start using the <span class="inline-code">bookings.ts</span> fixture helper.</li>
+      <li>All test bookings use <span class="inline-code">firstname: "AUTOTEST"</span> as a namespace — easy to identify and bulk-delete.</li>
+      <li>Teardown runs in Playwright's <span class="inline-code">afterAll</span> / <span class="inline-code">afterEach</span> hooks via DELETE /api/booking/:id.</li>
+      <li>Credentials stored in GitHub Secrets — never hardcoded in source files.</li>
+    </ul>
+  </div>
+</div>
+
+<h3>3.5 — Branch and trigger matrix</h3>
+<div class="matrix">
+  <div class="matrix-cell"><h4>Every pull request</h4><ul><li>Newman API tests</li><li>Playwright E2E (Chromium)</li><li>Accessibility scan</li><li>TypeScript build + lint</li></ul></div>
+  <div class="matrix-cell"><h4>Merge to main</h4><ul><li>All of the above</li><li>Playwright on Firefox (added project)</li><li>Schema / contract validation</li></ul></div>
+  <div class="matrix-cell"><h4>Nightly (02:00 UTC)</h4><ul><li>Full regression suite</li><li>k6 performance tests</li><li>WebKit browser coverage</li><li>Slack digest on any failure</li></ul></div>
+  <div class="matrix-cell"><h4>Pre-release (manual gate)</h4><ul><li>Everything in nightly</li><li>Exploratory sign-off by QE</li><li>Stakeholder demo on staging</li><li>P1/P2 defect count reviewed</li></ul></div>
+</div>
+
+<h3>3.6 — Repo layout</h3>
+<div class="code-block"><span class="c"># bb-demo-tests/ — full project structure</span>
+bb-demo-tests/
+├── playwright/
+│   ├── tests/
+│   │   ├── <span class="v">availability-checker.spec.ts</span>   <span class="c"># TC-01 to TC-09</span>
+│   │   ├── <span class="v">admin-auth.spec.ts</span>             <span class="c"># TC-10 to TC-17</span>
+│   │   └── <span class="v">accessibility.spec.ts</span>          <span class="c"># NF-04, NF-05</span>
+│   └── fixtures/
+│       └── <span class="v">bookings.ts</span>                    <span class="c"># API test-data helpers</span>
+├── postman/
+│   └── <span class="v">RestfulBookerPlatform.collection.json</span>  <span class="c"># TC-08, TC-11-14, TC-17, NF-07</span>
+├── k6/
+│   └── <span class="v">auth-load-test.js</span>               <span class="c"># NF-01, NF-02</span>
+├── .github/
+│   └── workflows/
+│       └── <span class="v">test.yml</span>                    <span class="c"># Full CI/CD pipeline</span>
+├── <span class="v">playwright.config.ts</span>
+├── <span class="v">package.json</span>
+├── <span class="v">.env.example</span>
+└── <span class="v">README.md</span>                           <span class="c"># Setup and run instructions</span></div>
+
+</div><!-- /task3 -->
+</div><!-- /page -->
+</body>
+</html>
