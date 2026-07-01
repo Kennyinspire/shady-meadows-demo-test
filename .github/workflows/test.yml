@@ -94,13 +94,13 @@ jobs:
           path: results/e2e-results.xml
           reporter: java-junit
 
-  # ─── Stage 3: Performance tests (nightly only) ───────────────────────────────
+  # ─── Stage 3: Performance tests ───────────────────────────────────────────────
   performance-tests:
     name: Performance tests (k6)
     runs-on: ubuntu-latest
     needs: e2e-tests
-    # Run nightly and when manually triggered
-    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+    # Run nightly, on manual trigger, and on pushes to main
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch' || (github.event_name == 'push' && github.ref == 'refs/heads/main')
 
     steps:
       - uses: actions/checkout@v4
