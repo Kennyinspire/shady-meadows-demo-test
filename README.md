@@ -26,8 +26,8 @@ Restful Booker Platform API.
 ## Setup
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/bb-demo-tests.git
-cd bb-demo-tests
+git clone https://github.com/Kennyinspire/shady-meadows-demo-test.git
+cd shady-meadows-demo-test
 npm install
 npx playwright install --with-deps chromium
 ```
@@ -91,7 +91,7 @@ These default to the public test site. Only override if using a different API en
 ## Project structure
 
 ```
-bb-demo-tests/
+shady-meadows-demo-test/
 ├── playwright/
 │   ├── tests/
 │   │   ├── availability-checker.spec.ts   # TC-01 to TC-09 (US1, US2)
@@ -117,6 +117,6 @@ bb-demo-tests/
 ## CI/CD
 
 Tests run automatically via GitHub Actions on every pull request and push to `main`.
-Performance tests run on a nightly schedule only.
+Performance tests run nightly, on manual workflow dispatch, and on pushes to `main`.
 
 See `.github/workflows/test.yml` for the full pipeline definition.
