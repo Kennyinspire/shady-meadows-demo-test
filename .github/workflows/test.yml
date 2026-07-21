@@ -6,9 +6,6 @@ on:
   pull_request:
     branches: [ main ]
   workflow_dispatch:
-  schedule:
-    # Nightly at 02:00 UTC — runs performance tests too
-    - cron: '0 2 * * *'
 
 env:
   BASE_URL:       ${{ secrets.BASE_URL || 'https://automationintesting.online' }}
